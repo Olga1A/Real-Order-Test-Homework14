@@ -11,6 +11,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.reset;
 
 public class ApiClient extends BaseSetupApi {
 
@@ -33,13 +34,7 @@ public class ApiClient extends BaseSetupApi {
     public static Response createOrder(RequestSpecification spec){
 
         Gson gson = new Gson();
-        OrderDto requestOrder = new OrderDto("Marina", "595847", "Please call me");
-        String customerName = RandomStringUtils.randomAlphabetic(10);
-        String customerPhone = RandomStringUtils.randomNumeric(9);
-        String comment = RandomStringUtils.randomAlphabetic(15);
-        requestOrder.setCustomerName(customerName);
-        requestOrder.setCustomerPhone(customerPhone);
-        requestOrder.setComment(comment);
+        OrderDto requestOrder = new OrderDto("Ivan", "58575554", "Ring my doorbell");
 
         return given()
                 .spec(spec)
@@ -68,13 +63,13 @@ public class ApiClient extends BaseSetupApi {
                 .response();
     }
 
-    public static Response getOrderById(RequestSpecification spec){
+    public static Response getOrderById(RequestSpecification spec, String orderId){
 
         return given()
                 .spec(spec)
                 .log()
                 .all()
-                .get("orders/id")
+                .get("orders/" + orderId)
                 .then()
                 .log()
                 .all()

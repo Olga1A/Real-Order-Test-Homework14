@@ -44,8 +44,13 @@ public class OrderTest extends BaseSetupApi {
 
     @Test
     void deleteOrderAndCheckStatusCode() {
-        Response responseCreatedOrder = ApiClient.createOrder(getAuthenticatedRequestSpecification(bearerToken));
+        Response responseCreatedOrder = ApiClient.createOrder(getAuthenticatedRequestSpecification(bearerToken) );
         String orderId = responseCreatedOrder.getBody().jsonPath().getString("id");
-        ApiClient.deleteOrder(getAuthenticatedRequestSpecification(bearerToken), "809");
+        ApiClient.deleteOrder(getAuthenticatedRequestSpecification(bearerToken), orderId);
+
+        Response response = ApiClient.getOrderById(getAuthenticatedRequestSpecification(bearerToken), orderId);
+
+        softly.assertThat(response.getBody().jsonPath().getString("id").isEmpty());
+        softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
     }
 }
