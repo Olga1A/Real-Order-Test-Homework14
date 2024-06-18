@@ -31,10 +31,10 @@ public class ApiClient extends BaseSetupApi {
                 .asString();
     }
 
-    public static Response createOrder(RequestSpecification spec){
+    public static Response createOrderAndCheckResponse(RequestSpecification spec){
 
         Gson gson = new Gson();
-        OrderDto requestOrder = new OrderDto("Ivan", "58575554", "Ring my doorbell");
+        OrderDto requestOrder = new OrderDto();
 
         return given()
                 .spec(spec)
@@ -91,6 +91,49 @@ public class ApiClient extends BaseSetupApi {
                 .statusCode(HttpStatus.SC_OK);
     }
 
+    public static OrderDto[] getOrdersAsArray(RequestSpecification authorizedSpecWithToken){
 
+        return given()
+                .spec(authorizedSpecWithToken)
+                .log()
+                .all()
+                .get("orders")
+                .then()
+                .log()
+                .all()
+                .extract()
+                .as(OrderDto[].class);
+    }
 
-}
+    public static void deleteOrderById(RequestSpecification spec,String orderId){
+
+        given()
+                .spec(spec)
+                .log()
+                .all()
+                .delete("orders/" + orderId)
+                .then()
+                .log()
+                .all()
+                .statusCode(HttpStatus.SC_OK);
+    }
+
+    public static Response createOrder(RequestSpecification spec){
+
+        Gson gson = new Gson();
+        OrderDto requestOrder = new OrderDto();
+
+        return given()
+                .spec(spec)
+                .log()
+                .all()
+                .body(gson.toJson(requestOrder))
+                .post( "orders")
+                .then()
+                .log()
+                .all()
+                .extract()
+                .response();
+    }
+    }
+
