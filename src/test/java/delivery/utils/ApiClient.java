@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import delivery.api.BaseSetupApi;
 import delivery.dto.LoginDto;
 import delivery.dto.OrderDto;
+import delivery.dto.OrderNonPrimitiveDto;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -75,10 +76,10 @@ public class ApiClient extends BaseSetupApi {
                 .all()
                 .extract()
                 .response()
-                .path("id");
+                .path (orderId);
     }
 
-    public static void deleteOrder(RequestSpecification spec,String orderId){
+    public static void deleteOrders(RequestSpecification spec,String orderId){
 
         given()
                 .spec(spec)
@@ -89,6 +90,21 @@ public class ApiClient extends BaseSetupApi {
                 .log()
                 .all()
                 .statusCode(HttpStatus.SC_OK);
+    }
+
+    //Lesson 15
+    public static OrderNonPrimitiveDto[] getAllOrderAsArray(RequestSpecification authorizedSpecWithToken) {
+
+        return given()
+                .spec(authorizedSpecWithToken)
+                .log()
+                .all()
+                .get()
+                .then()
+                .log()
+                .all()
+                .extract()
+                .as(OrderNonPrimitiveDto[].class);
     }
 
     public static OrderDto[] getOrdersAsArray(RequestSpecification authorizedSpecWithToken){
@@ -105,25 +121,31 @@ public class ApiClient extends BaseSetupApi {
                 .as(OrderDto[].class);
     }
 
-    public static void deleteOrderById(RequestSpecification spec,String orderId){
+    public static void deleteOrder(RequestSpecification spec,String orderId){
 
         given()
                 .spec(spec)
                 .log()
                 .all()
-                .delete("orders/" + orderId)
+                .delete("orders")
                 .then()
                 .log()
                 .all()
                 .statusCode(HttpStatus.SC_OK);
+
     }
 
-    public static Response createOrder(RequestSpecification spec){
+    public  Response createOrder(RequestSpecification spec){
 
         Gson gson = new Gson();
         OrderDto requestOrder = new OrderDto();
+        OrderDataGenerator orderDtoRequest = new OrderDataGenerator();
+        String comment = RandomStringUtils.randomAlphabetic(8);
+        String customerName = RandomStringUtils.randomAlphabetic(5);
+        String customerPhone = RandomStringUtils.randomNumeric(8);
 
         return given()
+                .contentType(ContentType.JSON)
                 .spec(spec)
                 .log()
                 .all()
@@ -134,6 +156,20 @@ public class ApiClient extends BaseSetupApi {
                 .all()
                 .extract()
                 .response();
+    }
+
+    public static OrderDto[] getNewOrdersAsArray(RequestSpecification authorizedSpecWithToken){
+
+        return given()
+                .spec(authorizedSpecWithToken)
+                .log()
+                .all()
+                .get("orders")
+                .then()
+                .log()
+                .all()
+                .extract()
+                .as(OrderDto[].class);
     }
     }
 
