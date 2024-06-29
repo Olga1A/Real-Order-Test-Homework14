@@ -16,6 +16,19 @@ import static delivery.utils.ApiClient.deleteOrders;
 
 public class OrderTest extends BaseSetupApi {
 
+    //HOMEWORK 14
+
+    @Test
+    void deleteOrderAndCheckStatus() {
+        Response responseCreateOrder = ApiClient.createOrderAndCheckResponse(getAuthenticatedRequestSpecification(bearerToken));
+        String orderId= responseCreateOrder.getBody().jsonPath().getString("id");
+        ApiClient.deleteOrders(getAuthenticatedRequestSpecification(bearerToken),orderId);
+
+        Response response = ApiClient.getOrderById(getAuthenticatedRequestSpecification(bearerToken), orderId);
+        softly.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SC_OK);
+        softly.assertThat(response.getBody().asString()).isEmpty();
+    }
+
     //LESSON 15
 
     //GET method - get all orders as array
@@ -47,7 +60,7 @@ public class OrderTest extends BaseSetupApi {
 
     //GET method - get new orders as array
         OrderDto[] newOrdersCheckAsArray = ApiClient.getOrdersAsArray(getAuthenticatedRequestSpecification(bearerToken));
-        softly.assertThat(newOrdersCheckAsArray).isEqualTo(4);
+        softly.assertThat(newOrdersCheckAsArray.length).isEqualTo(4);
     }
 
     //POST method

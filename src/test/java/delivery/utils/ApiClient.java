@@ -75,8 +75,8 @@ public class ApiClient extends BaseSetupApi {
                 .log()
                 .all()
                 .extract()
-                .response()
-                .path (orderId);
+                .response();
+               // .path (orderId);
     }
 
     public static void deleteOrders(RequestSpecification spec,String orderId){
